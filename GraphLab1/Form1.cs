@@ -17,12 +17,12 @@ namespace GraphLab1
         Graphics g = null;
         static float x_max, y_max;
         static PointF[] corners = new PointF[4];  // LEFT_UP RIGTH_UP RIGTH_DOWN LEFT_DOWN
-        GraphSurface graphSurf;
+        GraphSurface graphSurf1, graphSurf2;
         Table table1, table2;
 
         /* PRIMARY POINTS TO THIS ARRAY */
         /* VARIANT #2 */
-        PointF[] PRIMARY_POINTS = new PointF[]
+        PointF[] PRIMARY_POINTS_TASK1 = new PointF[]
         {
             new PointF(0.35f, 2.73951f),
             new PointF(0.41f, 2.30080f),
@@ -31,7 +31,7 @@ namespace GraphLab1
             new PointF(0.56f, 1.59502f),
             new PointF(0.64f, 1.34310f),
         };
-        float[] xToInterpolate = new float[]
+        float[] xToInterpolate_TASK1 = new float[]
         {
             0.526f,
             0.482f,
@@ -40,7 +40,21 @@ namespace GraphLab1
             0.552f,
             0.640f,
         };
-        float[] yToFind = null;
+        float[] yToFind_TASK1 = null;
+        PointF[] PRIMARY_POINTS_TASK2 = new PointF[10];
+        float[] xToInterpolate_TASK2 = new float[]
+        {
+            1.011f,
+            1.174f,
+            1.284f,
+            1.331f,
+            1.480f,
+            1.521f,
+            1.669f,
+            1.747f,
+            1.848f,
+        };
+        float[] yToFind_TASK2 = null;
 
         public Graph()
         {
@@ -53,8 +67,6 @@ namespace GraphLab1
         }
         private void panel2_Paint(object sender, PaintEventArgs e)
         {
-            //graph_canvas.Refresh();
-
 
         }
         private void drawLine(Pen pen, float x1, float y1, float x2, float y2)
@@ -76,35 +88,20 @@ namespace GraphLab1
                 drawLine(pen, bufPoint1.X, bufPoint1.Y, bufPoint2.X, bufPoint2.Y);
             }
         }
+
         private void Graph_Load(object sender, EventArgs e)
         {
             g = graph_canvas.CreateGraphics();
             x_max = graph_canvas.Width;
             y_max = graph_canvas.Height;
-            graphSurf = new GraphSurface(
+
+            graphSurf1 = new GraphSurface(
                 g, blackPen, new Pen(Color.Black, 5), grayPen, new PointF(x_max, y_max));
-
-            table1 = new Table(tablePanel1.CreateGraphics(), 2, PRIMARY_POINTS.Length + 1,
-                tablePanel1.Height, tablePanel1.Width);
-            table1.values[0, 0] = "x";
-            table1.values[1, 0] = "f(x)";
-            for (int i = 0; i < PRIMARY_POINTS.Length; i++)
-            {
-                table1.values[0, i + 1] = String.Format("{0:0.00}", PRIMARY_POINTS[i].X);
-                table1.values[1, i + 1] = String.Format("{0:0.00}", PRIMARY_POINTS[i].Y);
-            }
-
-            table2 = new Table(tablePanel2.CreateGraphics(), 2, PRIMARY_POINTS.Length + 1,
-                tablePanel2.Height, tablePanel1.Width + 1);
-
-            PointF bufferP;
-            for (int i = 0; i < PRIMARY_POINTS.Length; i++)
-                graphSurf.addPoint(PRIMARY_POINTS[i]);
-
-            table1.drawTable();
+            graphSurf2 = new GraphSurface(
+                g, blackPen, new Pen(Color.Black, 5), grayPen, new PointF(x_max, y_max));
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void doTask()
         {
             graph_canvas.Refresh();
             tablePanel1.Refresh();
@@ -119,17 +116,42 @@ namespace GraphLab1
             corners[3] = new PointF(3, y_max - 3);
 
             connectPoints(new Pen(Color.DarkCyan, 2), corners, true);
+        }
 
-            g.DrawCurve(blackPen, graphSurf.GetPointsToConnect());
+        private void button1_Click(object sender, EventArgs e)
+        { /* ЗАДАНИЕ №1 */
+
+            table1 = new Table(tablePanel1.CreateGraphics(), 2, PRIMARY_POINTS_TASK1.Length + 1,
+                tablePanel1.Height, tablePanel1.Width);
+            table1.values[0, 0] = "x";
+            table1.values[1, 0] = "f(x)";
+            for (int i = 0; i < PRIMARY_POINTS_TASK1.Length; i++)
+            {
+                table1.values[0, i + 1] = String.Format("{0:0.00}", PRIMARY_POINTS_TASK1[i].X);
+                table1.values[1, i + 1] = String.Format("{0:0.00}", PRIMARY_POINTS_TASK1[i].Y);
+            }
+
+            table2 = new Table(tablePanel2.CreateGraphics(), 2, PRIMARY_POINTS_TASK1.Length + 1,
+                tablePanel2.Height, tablePanel1.Width + 1);
+
+            PointF bufferP;
+            for (int i = 0; i < PRIMARY_POINTS_TASK1.Length; i++)
+                graphSurf1.addPoint(PRIMARY_POINTS_TASK1[i]);
 
             table1.drawTable();
 
-            yToFind = new float[xToInterpolate.Length];
-            for (int i = 0; i < xToInterpolate.Length; i++)
-                yToFind[i] = Lagrange.Interpolate(xToInterpolate[i], PRIMARY_POINTS);
-            PointF[] foundPoints = new PointF[xToInterpolate.Length];
+            doTask();
+
+            g.DrawCurve(blackPen, graphSurf1.GetPointsToConnect());
+
+            table1.drawTable();
+
+            yToFind_TASK1 = new float[xToInterpolate_TASK1.Length];
+            for (int i = 0; i < xToInterpolate_TASK1.Length; i++)
+                yToFind_TASK1[i] = Lagrange.Interpolate(xToInterpolate_TASK1[i], PRIMARY_POINTS_TASK1);
+            PointF[] foundPoints = new PointF[xToInterpolate_TASK1.Length];
             for (int i = 0; i < foundPoints.Length; i++)
-                foundPoints[i] = new PointF(xToInterpolate[i], yToFind[i]);
+                foundPoints[i] = new PointF(xToInterpolate_TASK1[i], yToFind_TASK1[i]);
 
             table2.values[0, 0] = "x";
             table2.values[1, 0] = "f(x)";
@@ -139,11 +161,60 @@ namespace GraphLab1
                 table2.values[1, i + 1] = String.Format("{0:0.00}", foundPoints[i].Y);
             }
             table2.drawTable();
+            graphSurf1.drawPoints(foundPoints, true);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        { /* ЗАДАНИЕ №2 */
+            for (int i = 0; i < PRIMARY_POINTS_TASK2.Length; i++)
+            {
+                PRIMARY_POINTS_TASK2[i].X = 1.0f + 0.1f * i;
+                PRIMARY_POINTS_TASK2[i].Y = (float)Math.Exp(PRIMARY_POINTS_TASK2[i].X);
+            }
+            table1 = new Table(tablePanel1.CreateGraphics(), 2, PRIMARY_POINTS_TASK2.Length + 1, 
+                tablePanel1.Height, tablePanel1.Width);
+            table1.values[0, 0] = "x";
+            table1.values[1, 0] = "f(x)";
+
+            for (int i = 0; i < PRIMARY_POINTS_TASK2.Length; i++)
+            {
+                table1.values[0, i + 1] = String.Format("{0:0.00}", PRIMARY_POINTS_TASK2[i].X);
+                table1.values[1, i + 1] = String.Format("{0:0.00}", PRIMARY_POINTS_TASK2[i].Y);
+            }
+
+            table2 = new Table(tablePanel2.CreateGraphics(), 2, xToInterpolate_TASK2.Length + 1,
+                tablePanel2.Height, tablePanel2.Width + 1);
+
+            PointF bufferP;
+            for (int i = 0; i < PRIMARY_POINTS_TASK2.Length; i++)
+                graphSurf2.addPoint(PRIMARY_POINTS_TASK2[i]);
+
+            doTask();
+
+            table1.drawTable();
+
+            g.DrawCurve(blackPen, graphSurf2.GetPointsToConnect());
 
 
-            graphSurf.drawPoints(foundPoints, true);
-            //g.DrawCurve(new Pen(Color.Pink, 3), graphSurf.transformPointsToCanvas(foundPoints));
+            yToFind_TASK2 = new float[xToInterpolate_TASK2.Length];
+            for (int i = 0; i < xToInterpolate_TASK2.Length; i++)
+                yToFind_TASK2[i] = Lagrange.Interpolate(xToInterpolate_TASK2[i], PRIMARY_POINTS_TASK2);
+            PointF[] foundPoints = new PointF[xToInterpolate_TASK2.Length];
+            for (int i = 0; i < foundPoints.Length; i++)
+                foundPoints[i] = new PointF(xToInterpolate_TASK2[i], yToFind_TASK2[i]);
 
+            for (int i = 0; i < foundPoints.Length; i++)
+                Console.WriteLine(foundPoints[i].ToString());
+
+            table2.values[0, 0] = "x";
+            table2.values[1, 0] = "f(x)";
+            for (int i = 0; i < foundPoints.Length; i++)
+            {
+                table2.values[0, i + 1] = String.Format("{0:0.00}", foundPoints[i].X);
+                table2.values[1, i + 1] = String.Format("{0:0.00}", foundPoints[i].Y);
+            }
+            table2.drawTable();
+            graphSurf2.drawPoints(foundPoints, true);
         }
     }
 
@@ -293,14 +364,13 @@ namespace GraphLab1
             connectPointsOnCanvas(borderPen, oXLine);
             connectPointsOnCanvas(borderPen, oYLine);
             circlePoints(allPoints.ToArray());
-
         }
     }
 
     class Table
     {
         Graphics g;
-        Font fontArial = new Font("Arial", 10);
+        Font fontArial = new Font("Arial", 7);
         SolidBrush brushBlack = new SolidBrush(Color.Black);
         Pen grayPen = new Pen(Color.DarkGray);
         Pen blackPen = new Pen(Color.Black);
@@ -327,7 +397,7 @@ namespace GraphLab1
                 for (int j = 0; j < columns; j++)
                 {
                     g.DrawString(values[i, j], fontArial, brushBlack,
-                        (float)width / columns * j, (float)height / rows * i + 3);
+                        (float)width / columns * j, (float)height / rows * i + 7);
                 }
             }
         }
